@@ -59,21 +59,24 @@ workflow {
 
     // THIS WEEK
     // Annotate the polished assembly using Prokka
-    
+    PROKKA(PILON.out)
 
     // Run BUSCO on the Polished Assembly
-    
+    BUSCO(PILON.out)
 
-    // Download the canonical reference genome 
-    
+    // Download the canonical reference genome
+    Channel.from(params.ref_genome)
+    | set { ncbi_ch } 
+
+    NCBI_DATASETS(ncbi_ch)
 
     // Run QUAST comparing the final assembly with the reference genome
-    
+    QUAST(NCBI_DATASETS.out, PILON.out)
 
     // Run QUAST on the unpolished assembly
-
+    QUAST_UNPOLISHED(NCBI_DATASETS.out, FLYE.out)
 
     // Run BUSCO PLOT on the BUSCO output
-    
+    BUSCO_PLOT(BUSCO.out)
     
 }
